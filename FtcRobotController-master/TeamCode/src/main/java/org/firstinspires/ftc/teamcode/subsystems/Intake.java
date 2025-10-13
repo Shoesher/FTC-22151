@@ -58,7 +58,7 @@ public class Intake {
 
     public void setOrbit(boolean setGreen, boolean setPurple){
         if(setGreen && colourInIntake("g")){
-            while (getColour(c_sensor2) != "g"){
+            if (getColour(c_sensor2) != "g"){
                 shooter.runLock(true);
                 mainOrbitor.setPower(orbitalVel);
             }
@@ -66,7 +66,7 @@ public class Intake {
         }
 
         else if(setPurple && colourInIntake("p")){
-            while (getColour(c_sensor2) != "p"){
+            if (getColour(c_sensor2) != "p"){
                 shooter.runLock(true);
                 mainOrbitor.setPower(orbitalVel);
             }
