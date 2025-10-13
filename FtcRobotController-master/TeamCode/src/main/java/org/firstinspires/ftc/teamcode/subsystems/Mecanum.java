@@ -1,24 +1,24 @@
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode.subsystems;
+
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import org.firstinspires.ftc.teamcode.OI;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-public class mecanumDrive {
+
+public class Mecanum {
     private DcMotor leftFront;
     private DcMotor leftBack;
     private DcMotor rightFront ;
     private DcMotor rightBack;
     private OI oi;
-    BNO055IMU imu;
     double[] optimizedVal = new double[4];
+    IMU imu;
+    IMU.Parameters parameters;
 
-    public mecanumDrive(OI oi){
+    //Constructor
+    public Mecanum(OI oi){
         leftFront  = hardwareMap.get(DcMotor.class, "frontLeft"); // port 0
         rightFront = hardwareMap.get(DcMotor.class, "frontRight"); //port 1
         leftBack  = hardwareMap.get(DcMotor.class, "backLeft"); // port 2
@@ -29,16 +29,16 @@ public class mecanumDrive {
         rightFront.setDirection(DcMotor.Direction.REVERSE);
         rightBack.setDirection(DcMotor.Direction.REVERSE);
 
-        this.oi.oi;
+        imu = hardwareMap.get(IMU.class, "imu");
 
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.imuOrientationOnRobot = new Orientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES, 0, 0, 0, 0);
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
+        ));
+
         imu.initialize(parameters);
     }
 
-    //Bot oriented
     public void botDrive(double y, double x, double theta){
         // Calculated values
         double leftFrontPower  = (x + y + theta);
@@ -78,14 +78,12 @@ public class mecanumDrive {
         rightBack.setPower(optimizedVal[3]);
     }
 
-    //Helper methods
     private double getYaw(){
-        double currentYaw = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-        return currentYaw;
+        return imu.getRobotYawPitchRollAngles().getYaw();
     }
 
     private void optimizeValues(double power1,double power2,double power3, double power4){
-        scale = Math.max(Math.max(power1, power2), Math.max(power3, power4));
+        double scale = Math.max(Math.max(power1, power2), Math.max(power3, power4));
         optimizedVal[0] = power1 /= scale;
         optimizedVal[1] = power2 /= scale;
         optimizedVal[2] = power3/= scale;
@@ -101,7 +99,7 @@ public class mecanumDrive {
         }
     }
 
-    public void updateDrive(){
-        switchOrientation(oi.getY(), oi.getLeftY(), oi.getLeftX(), oi.getRightX());
+    public void updateDriveTeleop(){
+        switchOrientation(oi.getDpadLeft(), oi.getLeftY(), oi.getLeftX(), oi.getRightX());
     }
 }
