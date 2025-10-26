@@ -19,10 +19,10 @@ public class Mecanum {
 
     //Constructor
     public Mecanum(OI oi){
-        leftFront  = hardwareMap.get(DcMotor.class, "frontLeft"); // port 0
-        rightFront = hardwareMap.get(DcMotor.class, "frontRight"); //port 1
-        leftBack  = hardwareMap.get(DcMotor.class, "backLeft"); // port 2
-        rightBack = hardwareMap.get(DcMotor.class, "backRight");
+        leftFront  = hardwareMap.get(DcMotor.class, "leftFront"); // port 0
+        rightFront = hardwareMap.get(DcMotor.class, "rightFront"); //port 1
+        leftBack  = hardwareMap.get(DcMotor.class, "leftBack"); // port 2
+        rightBack = hardwareMap.get(DcMotor.class, "rightBack");
 
         leftFront.setDirection(DcMotor.Direction.FORWARD);
         leftBack.setDirection(DcMotor.Direction.FORWARD);

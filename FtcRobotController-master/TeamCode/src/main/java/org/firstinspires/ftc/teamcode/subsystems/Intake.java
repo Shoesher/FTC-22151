@@ -8,13 +8,13 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
+import java.util.Objects;
+
 public class Intake {
     private DcMotor mainIntake;
     private DcMotor mainOrbitor;
     private NormalizedColorSensor c_sensor1;
     private NormalizedColorSensor c_sensor2;
-    private NormalizedColorSensor c_sensor3;
-    private NormalizedColorSensor c_sensor4;
     private DigitalChannel b_sensor1;
     private OI oi;
     private Tracker trackedBalls;
@@ -39,8 +39,6 @@ public class Intake {
         //Sensors
         c_sensor1 = hardwareMap.get(NormalizedColorSensor.class, "c_sensor1");
         c_sensor2 = hardwareMap.get(NormalizedColorSensor.class, "c_sensor2");
-        c_sensor3 = hardwareMap.get(NormalizedColorSensor.class, "c_sensor3");
-        c_sensor4 = hardwareMap.get(NormalizedColorSensor.class, "c_sensor4");
 
         b_sensor1 = hardwareMap.get(DigitalChannel.class, "beamBreak");
         b_sensor1.setMode(DigitalChannel.Mode.INPUT);
@@ -57,62 +55,29 @@ public class Intake {
     }
 
     public void setOrbit(boolean setGreen, boolean setPurple){
-        if(setGreen && colourInIntake("g")){
-            if (getColour(c_sensor2) != "g"){
-                shooter.runLock(true);
+        if(setGreen && trackedBalls.colourInIntake("g")){
+            if (!Objects.equals(trackedBalls.getColour(c_sensor2), "g")){
                 mainOrbitor.setPower(orbitalVel);
             }
             projectile = "g";
         }
 
-        else if(setPurple && colourInIntake("p")){
-            if (getColour(c_sensor2) != "p"){
-                shooter.runLock(true);
+        else if(setPurple && trackedBalls.colourInIntake("p")){
+            if (!Objects.equals(trackedBalls.getColour(c_sensor2), "p")){
                 mainOrbitor.setPower(orbitalVel);
             }
             projectile = "p";
         }
     }
 
-    private boolean colourInIntake(String c){
-        boolean colourExists = false;
-        for(int i = 0; i > trackedBalls.getSize(); i++){
-            if(trackedBalls.getBall(i) == c) colourExists = true;
-        }
-        return colourExists;
-    }
-
     public void trackIntakedObj(boolean beam, boolean isExpelling){
         if(!beam && !isExpelling){
-            String ballColour = getColour(c_sensor1); //Get the colour of the intaked ball
+            String ballColour = trackedBalls.getColour(c_sensor1); //Get the colour of the intaked ball
             trackedBalls.addBall(ballColour);
         }
         else if(!beam && isExpelling){
             trackedBalls.removeBallExpel();
         }
-    }
-
-    public String getColour(NormalizedColorSensor sensor){
-        //Get colour values
-        NormalizedRGBA colours = sensor.getNormalizedColors();
-        float currentAlpha = colours.alpha;
-        float normR, normG, normB;
-        normR = colours.red/currentAlpha;
-        normG = colours.green/currentAlpha;
-        normB = colours.blue/currentAlpha;
-
-        //Determine colour of object
-        if(normG > 0.4 && (normG > normR && normG > normB)) return "g";
-        else if(normR > 0.4 && normB > 0.4 && normG < 0.3) return "p";
-        else{ return "u";}
-    }
-
-    private void rotateOrbitorCW(int Rotations, double vel){
-        //GEAR RATIO not accounted for
-        int targetPos = Math.round(ticksPerRev/Rotations);
-        mainOrbitor.setTargetPosition(targetPos);
-        mainOrbitor.setPower(vel);
-        mainOrbitor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public void updateIntakeTeleop(){
