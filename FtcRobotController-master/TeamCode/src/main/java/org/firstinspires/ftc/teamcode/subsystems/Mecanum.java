@@ -4,25 +4,26 @@ import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.har
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
 
 
 public class Mecanum {
-    private DcMotor leftFront;
-    private DcMotor leftBack;
-    private DcMotor rightFront ;
-    private DcMotor rightBack;
+    private DcMotorEx leftFront;
+    private DcMotorEx leftBack;
+    private DcMotorEx rightFront ;
+    private DcMotorEx rightBack;
     private OI oi;
     double[] optimizedVal = new double[4];
     IMU imu;
     IMU.Parameters parameters;
 
     //Constructor
-    public Mecanum(OI oi){
-        leftFront  = hardwareMap.get(DcMotor.class, "leftFront"); // port 0
-        rightFront = hardwareMap.get(DcMotor.class, "rightFront"); //port 1
-        leftBack  = hardwareMap.get(DcMotor.class, "leftBack"); // port 2
-        rightBack = hardwareMap.get(DcMotor.class, "rightBack");
+    public Mecanum(){
+        leftFront  = hardwareMap.get(DcMotorEx.class, "leftFront"); // port 0
+        rightFront = hardwareMap.get(DcMotorEx.class, "rightFront"); //port 1
+        leftBack  = hardwareMap.get(DcMotorEx.class, "leftBack"); // port 2
+        rightBack = hardwareMap.get(DcMotorEx.class, "rightBack");
 
         leftFront.setDirection(DcMotor.Direction.FORWARD);
         leftBack.setDirection(DcMotor.Direction.FORWARD);
@@ -97,9 +98,5 @@ public class Mecanum {
         else{
             fieldDrive(y,x,theta, getYaw());
         }
-    }
-
-    public void updateDriveTeleop(){
-        switchOrientation(oi.getDpadLeft(), oi.getLeftY(), oi.getLeftX(), oi.getRightX());
     }
 }

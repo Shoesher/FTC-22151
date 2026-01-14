@@ -2,13 +2,14 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import java.util.Objects;
 
 public class Shooter {
-    private DcMotor mainShooter;
+    private DcMotorEx mainShooter;
     private DcMotor mainIndexer;
     private DigitalChannel b_sensor2;
     private double indexVel = 0.5;
@@ -18,10 +19,10 @@ public class Shooter {
     private Tracker tracker;
 
     //Constructor
-    public Shooter(OI oi){
-        mainShooter = hardwareMap.get(DcMotor.class, "mainShooter");
+    public Shooter(){
+        mainShooter = hardwareMap.get(DcMotorEx.class, "mainShooter");
         mainIndexer = hardwareMap.get(DcMotor.class, "mainIndexer");
-        intake = new Intake(oi);
+        intake = new Intake();
         tracker = new Tracker();
 
         b_sensor2 = hardwareMap.get(DigitalChannel.class, "b_sensor2");
@@ -34,15 +35,9 @@ public class Shooter {
         }
     }
 
-
     public void detectShot(boolean beam){
         if(!beam && (Objects.equals(intake.projectile, "g") || Objects.equals(intake.projectile, "p"))){
             tracker.removeBallShot(intake.projectile);
         }
-    }
-
-    public void updateShooterTeleop(){
-        runShooter(oi.getRightTrigger());
-        detectShot(b_sensor2.getState());
     }
 }

@@ -1,57 +1,45 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.opMode;
+
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 public class OI {
-    //Buttons
-    public boolean getY(){
-        return gamepad1.y;
+    //Initialize
+    Mecanum drivetrain = new Mecanum();
+    Shooter shooter = new Shooter();
+    Intake intake = new Intake();
+    Spindexer orbitor = new Spindexer();
+    Gamepad controller1;
+    Gamepad controller2;
+    public OI(Gamepad pad1, Gamepad pad2){
+        this.controller1 = pad1;
+        this.controller2 = pad2;
+    }
+    //Main loop
+    public void updateDrive(){
+        drivetrain.botDrive(controller1.left_stick_y, controller1.left_stick_x, controller1.right_stick_x);
     }
 
-    public boolean getX(){
-        return gamepad1.x;
-    }
-    public boolean getA() { return gamepad1.a; }
-
-    public boolean getB() { return gamepad1.b; }
-
-    public boolean getDpadUp(){
-        return gamepad1.dpad_up;
+    public void updateShooter(){
+        shooter.runShooter(controller1.right_trigger);
     }
 
-    public boolean getDpadDown(){
-        return gamepad1.dpad_down;
+    public void updateSpindexer(){
+        //You only want to run this once per button press
+        orbitor.setOrbit(controller1.xWasPressed(), controller1.yWasPressed());
     }
 
-    public boolean getDpadLeft(){
-        return gamepad1.dpad_left;
+    public void updateIntake(){
+        intake.runIntake(controller1.left_trigger, controller1.left_bumper);
     }
 
-    public boolean getRightBumper(){
-        return gamepad1.right_bumper;
-    }
-
-    public boolean getLeftBumper(){
-        return gamepad1.left_bumper;
-    }
-
-    //Analog inputs
-    public double getLeftY(){
-        return -gamepad1.left_stick_y;
-    }
-
-    public double getLeftX(){
-        return gamepad1.left_stick_x;
-    }
-
-    public double getRightX(){
-        return gamepad1.right_stick_x;
-    }
-
-    public double getRightTrigger(){
-        return gamepad1.right_trigger;
-    }
-    public double getLeftTrigger(){
-        return gamepad1.left_trigger;
+    public void periodicUpdate(){
+        updateDrive();
+        updateShooter();
+        updateSpindexer();
+        updateIntake();
     }
 }

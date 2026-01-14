@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
@@ -11,8 +12,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import java.util.Objects;
 
 public class Intake {
-    private DcMotor mainIntake;
-    private DcMotor mainOrbitor;
+    private DcMotorEx mainIntake;
     private NormalizedColorSensor c_sensor1;
     private NormalizedColorSensor c_sensor2;
     private DigitalChannel b_sensor1;
@@ -27,14 +27,12 @@ public class Intake {
     private int ticksPerRev = 1440;
     public String projectile;
 
-    public Intake(OI oi){
+    public Intake(){
         trackedBalls = new Tracker();
-        shooter = new Shooter(oi);
+        shooter = new Shooter();
 
         //Motors
-        mainIntake  = hardwareMap.get(DcMotor.class, "mainIntake"); // port 0
-        mainOrbitor = hardwareMap.get(DcMotor.class, "mainOrbitor");
-        mainOrbitor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        mainIntake  = hardwareMap.get(DcMotorEx.class, "mainIntake"); // port 0
 
         //Sensors
         c_sensor1 = hardwareMap.get(NormalizedColorSensor.class, "c_sensor1");
@@ -54,22 +52,6 @@ public class Intake {
         }
     }
 
-    public void setOrbit(boolean setGreen, boolean setPurple){
-        if(setGreen && trackedBalls.colourInIntake("g")){
-            if (!Objects.equals(trackedBalls.getColour(c_sensor2), "g")){
-                mainOrbitor.setPower(orbitalVel);
-            }
-            projectile = "g";
-        }
-
-        else if(setPurple && trackedBalls.colourInIntake("p")){
-            if (!Objects.equals(trackedBalls.getColour(c_sensor2), "p")){
-                mainOrbitor.setPower(orbitalVel);
-            }
-            projectile = "p";
-        }
-    }
-
     public void trackIntakedObj(boolean beam, boolean isExpelling){
         if(!beam && !isExpelling){
             String ballColour = trackedBalls.getColour(c_sensor1); //Get the colour of the intaked ball
@@ -78,11 +60,5 @@ public class Intake {
         else if(!beam && isExpelling){
             trackedBalls.removeBallExpel();
         }
-    }
-
-    public void updateIntakeTeleop(){
-        trackIntakedObj(b_sensor1.getState(), oi.getLeftBumper()); //Check if you're expelling
-        setOrbit(oi.getY(), oi.getX());
-        runIntake(oi.getLeftTrigger(), oi.getLeftBumper());
     }
 }
